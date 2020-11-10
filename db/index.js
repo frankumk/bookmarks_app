@@ -21,21 +21,9 @@ const syncAndSeed = async()=>{
     await Bookmarks.create({name: 'fullstack', url: 'https://www.fullstackacademy.com/', category: 'code'});
 }
 
-const start = async()=>{
-    try{
-        await db.authenticate();
-        await syncAndSeed();
 
-        const port = process.env.PORT || 3000;
-        app.listen(port, ()=>console.log(`listening on port ${port}`));
-    }catch(ex){
-        console.log(ex);
-    }
 
-}
-start();
-
-module.export = {
+module.exports = {
     syncAndSeed,
     db,
     Bookmarks
