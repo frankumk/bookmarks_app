@@ -3,6 +3,8 @@ const express = require('express');
 const app = express();
 const {syncAndSeed, db, Bookmarks} = require('./db')
 
+app.use(express.urlencoded({extended:false}));
+
 //need to make form work and delete work
 
  app.get('/', async (req, res, next)=>{
@@ -17,10 +19,10 @@ const {syncAndSeed, db, Bookmarks} = require('./db')
         </head>
         <body>
             <h1>Bookmarks (${books.length})</h1>
-            <form>
-                <input type='text' placeholder='Enter Site Name'></input>
-                <input type='text' placeholder='Enter Site URL'></input>
-                <input type='text' placeholder='Enter Category'></input>
+            <form method="POST">
+                <input type='text' name="name" placeholder='Enter Site Name'></input>
+                <input type='text' name="url" placeholder='Enter Site URL'></input>
+                <input type='text' name="category" placeholder='Enter Category'></input>
                 <button>Create</button>
             </form>
             <div>
@@ -33,7 +35,7 @@ const {syncAndSeed, db, Bookmarks} = require('./db')
                             return acc
                         }
                     },[]).map((curr)=>{
-                        let count =  Bookmarks.findAll({  where: {   category: curr  }}); //need to fix count
+                        let count =  Bookmarks.findAll({  where: {   category: curr}  }); //need to fix count
                         return `
                             <li><a href='/bookmarks/${curr}'>${curr}(${count.length})</a></li>
                         `
@@ -43,6 +45,16 @@ const {syncAndSeed, db, Bookmarks} = require('./db')
         </body>
         </html>
      `)
+ })
+
+ app.post('/',async(req,res,next)=>{
+     //res.send(req.body);
+     try{
+        const bookmark = await Bookmarks.create(req.body);
+        res.redirect('/');
+     }catch(ex){
+
+     }
  })
 
  app.get('/bookmarks/:name', async (req,res,next)=>{
@@ -63,7 +75,7 @@ const {syncAndSeed, db, Bookmarks} = require('./db')
                 <ul>
                     ${book.map(curr=>{
                         return `<li><a href='${curr.url}'>${curr.name}</a><button>x</button></li>`
-                    })}
+                    }).join('')}
                 </ul>
             </div>
         </body>
