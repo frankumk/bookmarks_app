@@ -4,7 +4,7 @@ const app = express();
 const {syncAndSeed, db, Bookmarks} = require('./db')
 
 app.use(express.urlencoded({extended:false}));
-
+app.use(express.json());
 //need to make form work and delete work
 
  app.get('/', async (req, res, next)=>{
@@ -34,8 +34,10 @@ app.use(express.urlencoded({extended:false}));
                             acc.push(book.category)
                             return acc
                         }
-                    },[]).map((curr)=>{
-                        let count =  Bookmarks.findAll({  where: {   category: curr}  }); //need to fix count
+                    },[]).map(async(curr)=>{
+                        //add key word raw
+                        let count =  await Bookmarks.findAll({  where: {   category: curr}  }, {raw : true}); //need to fix count
+                        console.log(count);
                         return `
                             <li><a href='/bookmarks/${curr}'>${curr}(${count.length})</a></li>
                         `
